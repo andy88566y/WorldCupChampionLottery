@@ -7,14 +7,14 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 // for debugging
 import "hardhat/console.sol";
 
-contract WorldCupChampionLottery is OwnableUpgradeable {
+contract WorldCupChampionBet is OwnableUpgradeable {
     using MathUpgradeable for uint256;
     uint256 public constant commissionNumerator = 1;
     uint256 public constant commissionDenominator = 100;
     uint256 public constant betPrice = 0.001 ether;
     uint256 public constant home = 0;
     uint256 public constant away = 1;
-    uint256 constant scale = 10**18;
+    uint256 private constant scale = 1000000000;
 
     // State Variables
     struct ChampionLotteryStruct {
@@ -39,7 +39,6 @@ contract WorldCupChampionLottery is OwnableUpgradeable {
         bool withdrawed; // 提錢與否
     }
 
-    // mapping(uint256 => ChampionLotteryStruct) public ChampionLotteries; // key is year
     ChampionLotteryStruct public ChampionLottery;
     // mapping(address => Ticket[]) public playerToTickets; // key is player address
     Ticket[] public homeTickets;
@@ -140,26 +139,24 @@ contract WorldCupChampionLottery is OwnableUpgradeable {
         _;
     }
 
+    modifier checkTime(uint256 _startTime, uint256 _endTime) {
+        console.log("checkTime");
+        require(_startTime < _endTime, "_startTime >= _endTime");
+        _;
+    }
+
+    // constructor
+    // constructor(
+    //     uint256 _year,
+    //     uint256 _startTime,
+    //     uint256 _endTime
+    // ) {
+    //     console.log("1");
+    //     _initLottery(_year, _startTime, _endTime);
+    //     console.log("2");
+    // }
+
     // functions
-
-    /*
-     * @title cancelLottery
-     * @dev 意外發生時，Dealer 能做的最後防線，取消賭盤並退款
-     */
-    function cancelLottery() external onlyOwner {
-        _resetLottery();
-    }
-
-    function _resetLottery() private onlyOwner {
-        Ticket[] storage tickets = allTickets;
-        uint256 length = tickets.length;
-        for (uint256 i = 0; i <= length; i++) {
-            Ticket storage ticket = tickets[i];
-            uint256 transfer = ticket.betCount * betPrice;
-            payable(ticket.playerAddress).transfer(transfer);
-            emit LogCancelFundsTransfered(ticket.playerAddress, transfer);
-        }
-    }
 
     /*
      * @title initLottery
@@ -172,7 +169,8 @@ contract WorldCupChampionLottery is OwnableUpgradeable {
         uint256 _year,
         uint256 _startTime,
         uint256 _endTime
-    ) external onlyOwner {
+    ) external onlyOwner checkTime(_startTime, _endTime) {
+        console.log("1");
         ChampionLottery = ChampionLotteryStruct({
             startTime: _startTime,
             endTime: _endTime,
@@ -327,5 +325,24 @@ contract WorldCupChampionLottery is OwnableUpgradeable {
         betCount = allTickets[_ticketId].betCount;
         awayOrHome = allTickets[_ticketId].awayOrHome;
         withdrawed = allTickets[_ticketId].withdrawed;
+    }
+
+    /*
+     * @title cancelLottery
+     * @dev 意外發生時，Dealer 能做的最後防線，取消賭盤並退款
+     */
+    function cancelLottery() external onlyOwner {
+        _resetLottery();
+    }
+
+    function _resetLottery() private onlyOwner {
+        Ticket[] storage tickets = allTickets;
+        uint256 length = tickets.length;
+        for (uint256 i = 0; i <= length; i++) {
+            Ticket storage ticket = tickets[i];
+            uint256 transfer = ticket.betCount * betPrice;
+            payable(ticket.playerAddress).transfer(transfer);
+            emit LogCancelFundsTransfered(ticket.playerAddress, transfer);
+        }
     }
 }
