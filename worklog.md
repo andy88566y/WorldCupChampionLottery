@@ -33,7 +33,6 @@
 11.
 
 ```
-
 potSizeAfterCommission = totalBetsCount * betPrice - commission
                        = 1220 * (0.001 * 10^18) - (0.0122 * 10^18)
                        = 1.2078e+18
