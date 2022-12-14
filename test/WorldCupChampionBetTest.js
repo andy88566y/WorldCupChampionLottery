@@ -496,9 +496,31 @@ describe("WorldCupChampionBet", function () {
 			).to.changeEtherBalance(playerE.address, 0);
 		});
 
-		it("Should transfer right amount of commission with LogCommissionTransfered", async function () {
-			const { contract, dealer, startTime, endTime, year, finalTime } =
-				await loadFixture(deployDealerSettledFixture);
+		it("Should transfer right amount of commission", async function () {
+			const { contract, dealer } = await loadFixture(
+				deployDealerSettledFixture
+			);
+
+			await expect(() =>
+				contract.triggerWithdrawal(dealer.address)
+			).to.changeEtherBalance(
+				dealer.address,
+				ethers.BigNumber.from("12200000000000000")
+			);
+		});
+
+		it("Should emit event LogCommissionTransfered", async function () {
+			const { contract, dealer } = await loadFixture(
+				deployDealerSettledFixture
+			);
+
+			await expect(contract.triggerWithdrawal(dealer.address))
+				.to.emit(contract, "LogCommissionTransfered")
+				.withArgs(
+					dealer.address,
+					ethers.BigNumber.from("12200000000000000"),
+					0
+				);
 		});
 	});
 
