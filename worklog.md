@@ -45,35 +45,28 @@ pricePerWinningBet = potSizeAfterCommission / winningBetsCount
                       賠率 10.98
 ```
 
-## 莊家處理意外狀況
-
-1. 意外沒開賽，在輸入 champion 之前可以 cancel Bet
-2. \_cancel() 處理退款
-
-#### terms
+### terms
 
 Ticket 每名玩家每次 mint 一張 ticket，一張 ticket 可以包含多個 bets
 1 bet 固定為 0.001 ether
 
-#### 開發問題
+### 開發問題
 
-到底應該下注時就抽成，還是開獎時再抽成呢？
-應該下注時就抽成，抽完成再紀錄 bets count
+1. 到底應該下注時就抽成，還是開獎時再抽成呢？
+   最後決定開獎時抽成，抽成完再分配
 
-想寫成只收贏家的 1% 錢，贏越多抽越多。
-那就得要開獎的時候才能抽成了
-
-Hardhat Test returns transaction instead of return value
-in my case,
+2. 在寫 test 時遇到了
+   Hardhat Test returns transaction instead of return value
+   是在下面這種寫法遇到的：
 
 ```
 ticketId = contract.connect(playerA).mintLotteryTicket(home, { value: ethers.utils.parseEther("0.001") })
 ```
 
 ticketId will be a transaction, not an uint256
-用 callStatic 來模擬 return value
+後來用 callStatic 來模擬 return value
 
-#### 測試網測試流程
+### 測試網測試流程
 
 部署合約
 使用以下參數
@@ -96,7 +89,7 @@ B home(0) 0.001
 https://goerli.etherscan.io/tx/0xa140268fe504eabfac7a86a199ffe55aa2c60dc43d575a7057782d64698a8ad8
 
 以上在 allTickets homeTicket awayTicket 都有成功設立
-去運動，等待四點半後，莊家呼叫
+等待四點半後，莊家呼叫
 
 1. settleLottery(0)
    https://goerli.etherscan.io/tx/0xece3fa5b682f40ce9a9aa43ccaf7f8d3d11082570b6b1b8755a1e080991ab000
@@ -106,6 +99,6 @@ https://goerli.etherscan.io/tx/0xa140268fe504eabfac7a86a199ffe55aa2c60dc43d575a7
    https://goerli.etherscan.io/tx/0x92ead757eb1322f15545c754d6ab8b2609ff0430baa67c5d5a97a0d0e3324d01
    ![withdraw success](https://i.imgur.com/H6yS741.png)
 
-#### 意外收穫
+### 意外收穫
 
 原來同樣的合約部署兩次，已經 verify 過的他也認得？真猛
