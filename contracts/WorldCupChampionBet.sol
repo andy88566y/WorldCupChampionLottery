@@ -140,7 +140,6 @@ contract WorldCupChampionBet is Ownable {
     }
 
     modifier checkTime(uint256 _startTime, uint256 _endTime) {
-        console.log("checkTime");
         require(_startTime < _endTime, "_startTime >= _endTime");
         _;
     }
@@ -170,12 +169,11 @@ contract WorldCupChampionBet is Ownable {
         uint256 _startTime,
         uint256 _endTime
     ) external onlyOwner checkTime(_startTime, _endTime) {
-        console.log("1");
         ChampionLottery = ChampionLotteryStruct({
             startTime: _startTime,
             endTime: _endTime,
             year: _year,
-            champion: 3,
+            champion: 2,
             commission: 0,
             pricePerWinningBet: 0,
             isSettled: false,
@@ -305,6 +303,34 @@ contract WorldCupChampionBet is Ownable {
             commission,
             address(this).balance
         );
+    }
+
+    /*
+     * @title getLottery
+     * @dev getter function for tickets bc its a struct
+     */
+    function getLottery()
+        public
+        view
+        returns (
+            uint256 startTime,
+            uint256 endTime,
+            uint256 year,
+            uint256 champion,
+            uint256 commission,
+            uint256 pricePerWinningBet,
+            bool isSettled,
+            bool isCompleted
+        )
+    {
+        startTime = ChampionLottery.startTime;
+        endTime = ChampionLottery.endTime;
+        year = ChampionLottery.year;
+        champion = ChampionLottery.champion;
+        commission = ChampionLottery.commission;
+        pricePerWinningBet = ChampionLottery.pricePerWinningBet;
+        isSettled = ChampionLottery.isSettled;
+        isCompleted = ChampionLottery.isCompleted;
     }
 
     /*
