@@ -322,21 +322,19 @@ contract WorldCupChampionBet is Ownable {
         ChampionLottery.isCompleted = true;
         uint256 pricePerWinningBet = ChampionLottery.pricePerWinningBet;
         uint256 length;
-        Ticket[] storage tickets;
+        Ticket[] memory tickets;
         if (ChampionLottery.champion == home) {
-            length = homeTickets.length;
             tickets = homeTickets;
         } else {
-            length = homeTickets.length;
-            tickets = homeTickets;
+            tickets = awayTickets;
         }
-        for (uint256 i = 0; i <= length; i++) {
-            Ticket storage ticket = tickets[i];
-            uint256 withdrawnAmount = ticket.betCount * pricePerWinningBet;
-            ticket.withdrawed = true;
-            payable(ticket.playerAddress).transfer(withdrawnAmount);
+        length = tickets.length;
+        for (uint256 i = 0; i < length; i++) {
+            uint256 withdrawnAmount = tickets[i].betCount * pricePerWinningBet;
+            tickets[i].withdrawed = true;
+            payable(tickets[i].playerAddress).transfer(withdrawnAmount);
             emit LogWinnerFundsTransfered(
-                ticket.playerAddress,
+                tickets[i].playerAddress,
                 withdrawnAmount
             );
         }
