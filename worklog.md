@@ -100,8 +100,12 @@ https://goerli.etherscan.io/tx/0xa140268fe504eabfac7a86a199ffe55aa2c60dc43d575a7
 去運動，等待四點半後，莊家呼叫
 
 1. settleLottery(0)
+   https://goerli.etherscan.io/tx/0xece3fa5b682f40ce9a9aa43ccaf7f8d3d11082570b6b1b8755a1e080991ab000
+   [settle 後 commission 有變化](https://i.imgur.com/IBI4IOX.png)
 2. triggerWithdrawal(0x8FBF8c717fD49714d864F81D26A2348E85a833dd)
    來觸發分錢，應該要是壓 home 的人拿到錢，莊家會拿到抽成
+   https://goerli.etherscan.io/tx/0x92ead757eb1322f15545c754d6ab8b2609ff0430baa67c5d5a97a0d0e3324d01
+   [withdraw success](https://i.imgur.com/H6yS741.png)
 
 #### 意外收穫
 
