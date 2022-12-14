@@ -235,19 +235,28 @@ contract WorldCupChampionBet is Ownable {
         onlyOwner
         checkAwayOrHomeParam(_champion)
     {
-        ChampionLotteryStruct storage lottery = ChampionLottery;
-        lottery.champion = _champion;
+        console.log("1");
+        // ChampionLotteryStruct storage lottery = ChampionLottery;
+        console.log("1");
+        ChampionLottery.champion = _champion;
+        console.log("2");
         uint256 winningBetsCount = 0;
         uint256 loseBetsCount = 0;
         uint256 totalBetsCount = 0;
-        Ticket[] storage tickets = allTickets;
+        console.log("3");
+        console.log("4");
         uint256 totalTicketsCount = allTickets.length;
+
+        console.log(_champion);
+        console.log(totalTicketsCount);
         for (uint256 i = 0; i < totalTicketsCount; i++) {
-            totalBetsCount += tickets[i].betCount;
-            if (tickets[i].awayOrHome == _champion) {
-                winningBetsCount += tickets[i].betCount;
+            totalBetsCount += allTickets[i].betCount;
+            console.log("allTickets[i].awayOrHome");
+            console.log(allTickets[i].awayOrHome);
+            if (allTickets[i].awayOrHome == _champion) {
+                winningBetsCount += allTickets[i].betCount;
             } else {
-                loseBetsCount += tickets[i].betCount;
+                loseBetsCount += allTickets[i].betCount;
             }
         }
         require(
@@ -255,13 +264,25 @@ contract WorldCupChampionBet is Ownable {
             "Bad Contract"
         );
 
-        uint256 commission = (totalBetsCount * commissionNumerator * betPrice) /
-            commissionDenominator;
-        uint256 potSizeAfterCommission = totalBetsCount * betPrice - commission;
-        uint256 pricePerWinningBet = potSizeAfterCommission / winningBetsCount;
-        lottery.commission = potSizeAfterCommission;
-        lottery.pricePerWinningBet = pricePerWinningBet;
-        lottery.isSettled = true;
+        uint256 commission;
+        uint256 potSizeAfterCommission;
+        uint256 pricePerWinningBet;
+        console.log("winningBetsCount");
+        console.log(winningBetsCount);
+        if (winningBetsCount == 0) {
+            pricePerWinningBet = 0;
+            commission = address(this).balance;
+        } else {
+            potSizeAfterCommission = totalBetsCount * betPrice - commission;
+            pricePerWinningBet = potSizeAfterCommission / winningBetsCount;
+            commission =
+                (totalBetsCount * commissionNumerator * betPrice) /
+                commissionDenominator;
+        }
+
+        ChampionLottery.commission = potSizeAfterCommission;
+        ChampionLottery.pricePerWinningBet = pricePerWinningBet;
+        ChampionLottery.isSettled = true;
         emit LogSettleLottery(
             _champion,
             totalTicketsCount,
