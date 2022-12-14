@@ -176,13 +176,102 @@ describe("WorldCupChampionBet", function () {
 				});
 			});
 			describe("playerC bets home 100 bets", function () {
-				it("Should set good allTickets homeTickets LogTicketMinted", async function () {});
+				it("Should set good allTickets homeTickets LogTicketMinted", async function () {
+					const { contract, playerC } = await loadFixture(deployFixture);
+
+					[ticketId, homeOrAwayTicketId] = await contract
+						.connect(playerC)
+						.callStatic.mintLotteryTicket(home, {
+							value: ethers.utils.parseEther("0.1"),
+						});
+
+					await contract.connect(playerC).mintLotteryTicket(home, {
+						value: ethers.utils.parseEther("0.1"),
+					});
+
+					[playerAddress, betCount, awayOrHome, withdrawed] =
+						await contract.getTicket(ticketId);
+
+					expect(playerAddress).to.eq(playerC.address);
+					expect(betCount).to.eq(100);
+					expect(awayOrHome).to.eq(home);
+					expect(withdrawed).to.eq(false);
+
+					[playerAddress, betCount, awayOrHome, withdrawed] =
+						await contract.getHomeTicket(homeOrAwayTicketId);
+
+					expect(playerAddress).to.eq(playerC.address);
+					expect(betCount).to.eq(100);
+					expect(awayOrHome).to.eq(home);
+					expect(withdrawed).to.eq(false);
+				});
 			});
-			describe("playerd bets away 1000 bets", function () {
-				it("Should set good allTickets homeTickets LogTicketMinted", async function () {});
+			describe("playerD bets away 1000 bets", function () {
+				it("Should set good allTickets homeTickets LogTicketMinted", async function () {
+					it("Should set good allTickets homeTickets LogTicketMinted", async function () {
+						const { contract, playerD } = await loadFixture(deployFixture);
+
+						// 用 callStatic 來模擬 return value
+						[ticketId, homeOrAwayTicketId] = await contract
+							.connect(playerD)
+							.callStatic.mintLotteryTicket(away, {
+								value: ethers.utils.parseEther("1"),
+							});
+						// 這邊的 return 會是 transaction
+						await contract.connect(playerD).mintLotteryTicket(away, {
+							value: ethers.utils.parseEther("1"),
+						});
+
+						[playerAddress, betCount, awayOrHome, withdrawed] =
+							await contract.getTicket(ticketId);
+
+						expect(playerAddress).to.eq(playerD.address);
+						expect(betCount).to.eq(1000);
+						expect(awayOrHome).to.eq(away);
+						expect(withdrawed).to.eq(false);
+
+						[playerAddress, betCount, awayOrHome, withdrawed] =
+							await contract.getAwayTicket(homeOrAwayTicketId);
+
+						expect(playerAddress).to.eq(playerD.address);
+						expect(betCount).to.eq(1000);
+						expect(awayOrHome).to.eq(away);
+						expect(withdrawed).to.eq(false);
+					});
+				});
 			});
 			describe("playerE bets home 1000 bets", function () {
-				it("Should set good allTickets homeTickets LogTicketMinted", async function () {});
+				it("Should set good allTickets homeTickets LogTicketMinted", async function () {
+					const { contract, playerE } = await loadFixture(deployFixture);
+
+					// 用 callStatic 來模擬 return value
+					[ticketId, homeOrAwayTicketId] = await contract
+						.connect(playerE)
+						.callStatic.mintLotteryTicket(home, {
+							value: ethers.utils.parseEther("1"),
+						});
+
+					// 這邊的 return 會是 transaction
+					await contract.connect(playerE).mintLotteryTicket(home, {
+						value: ethers.utils.parseEther("1"),
+					});
+
+					[playerAddress, betCount, awayOrHome, withdrawed] =
+						await contract.getTicket(ticketId);
+
+					expect(playerAddress).to.eq(playerE.address);
+					expect(betCount).to.eq(1000);
+					expect(awayOrHome).to.eq(home);
+					expect(withdrawed).to.eq(false);
+
+					[playerAddress, betCount, awayOrHome, withdrawed] =
+						await contract.getHomeTicket(homeOrAwayTicketId);
+
+					expect(playerAddress).to.eq(playerE.address);
+					expect(betCount).to.eq(1000);
+					expect(awayOrHome).to.eq(home);
+					expect(withdrawed).to.eq(false);
+				});
 			});
 			describe("getTicket()", function () {});
 		});
