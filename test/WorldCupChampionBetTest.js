@@ -94,7 +94,21 @@ describe("WorldCupChampionBet", function () {
 					"only humans allowed! (code present at caller address)"
 				);
 			});
-			it("Should revert with the right error if called with 0.0011 ether", async function () {});
+
+			it("Should revert with the right error if called with wrong ether", async function () {
+				const { contract, playerA } = await loadFixture(deployFixture);
+
+				await expect(
+					contract.connect(playerA).mintLotteryTicket(home, {
+						value: ethers.utils.parseEther("0.0001"),
+					})
+				).to.be.revertedWith("msg.value has remainder");
+				await expect(
+					contract.connect(playerA).mintLotteryTicket(home, {
+						value: ethers.utils.parseEther("0.0011"),
+					})
+				).to.be.revertedWith("msg.value has remainder");
+			});
 
 			describe("playerA bets home 10 bets", function () {
 				it("Should set good allTickets homeTickets LogTicketMinted", async function () {
