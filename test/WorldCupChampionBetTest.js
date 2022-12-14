@@ -4,28 +4,33 @@ const {
 } = require("@nomicfoundation/hardhat-network-helpers");
 const { expect } = require("chai");
 const BigNumber = require("bignumber.js");
+const { ethers } = require("hardhat");
 
 describe("WorldCupChampionBet", function () {
 	async function deployFixture() {
-		const [owner, playerA, playerB, playerC, playerD, playerE] =
+		const [dealer, playerA, playerB, playerC, playerD, playerE] =
 			await ethers.getSigners();
 		const year = 2022;
 		console.log("123");
-		const startTime = BigNumber("1670886000"); // 2022/12/13 00:00:00 UTC
-		const endTime = BigNumber("1670940000"); // 2022/12/18 15:00:00 UTC WorkdCup 冠軍賽開踢前
+
+		const startTime = ethers.BigNumber.from("1670886000"); // 2022/12/13 00:00:00 UTC
+		const endTime = ethers.BigNumber.from("1670940000"); // 2022/12/18 15:00:00 UTC WorkdCup 冠軍賽開踢前
 
 		console.log("456");
 		const Contract = await ethers.getContractFactory("WorldCupChampionBet");
 		console.log("789");
 		const contract = await Contract.deploy();
-		contract.connect(owner).initLottery(year, startTime, endTime);
+		console.log("10");
+		console.log(await contract.owner());
+		await contract.connect(dealer).initLottery(year, startTime, endTime);
+		console.log("11");
 
 		return {
 			contract,
 			startTime,
 			endTime,
 			year,
-			owner,
+			dealer,
 			playerA,
 			playerB,
 			playerC,
@@ -36,17 +41,23 @@ describe("WorldCupChampionBet", function () {
 
 	describe("Deployment", function () {
 		it.only("Should set the right public variable ChampionLottery", async function () {
+			console.log("asdf");
 			const { contract, startTime, endTime, year } = await loadFixture(
 				deployFixture
 			);
 
-			expect(await contract.ChampionLottery().startTime).to.equal(startTime);
+			console.log("jkl");
+			// console.log(contract.ChampionLottery().startTime());
+
+			// expect(
+			// 	BigNumber(await contract.ChampionLottery().startTime().toString())
+			// ).to.equal(startTime);
 		});
 
-		it("Should set the right owner", async function () {
-			const { owner, contract } = await loadFixture(deployFixture);
+		it("Should set the right dealer", async function () {
+			const { dealer, contract } = await loadFixture(deployFixture);
 
-			expect(await contract.owner()).to.equal(owner.address);
+			expect(await contract.dealer()).to.equal(dealer.address);
 		});
 
 		it("Should fail unless startTime < endTime", async function () {

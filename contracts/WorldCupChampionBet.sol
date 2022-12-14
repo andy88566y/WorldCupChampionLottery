@@ -2,13 +2,13 @@
 pragma solidity ^0.8.0;
 
 // load other contracts
-import "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 // for debugging
 import "hardhat/console.sol";
 
-contract WorldCupChampionBet is OwnableUpgradeable {
-    using MathUpgradeable for uint256;
+contract WorldCupChampionBet is Ownable {
+    using Math for uint256;
     uint256 public constant commissionNumerator = 1;
     uint256 public constant commissionDenominator = 100;
     uint256 public constant betPrice = 0.001 ether;
