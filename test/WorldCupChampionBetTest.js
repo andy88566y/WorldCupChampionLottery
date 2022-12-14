@@ -2,6 +2,7 @@ const {
 	time,
 	loadFixture,
 } = require("@nomicfoundation/hardhat-network-helpers");
+const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const home = 0;
@@ -430,6 +431,7 @@ describe("WorldCupChampionBet", function () {
 				contract.triggerWithdrawal(dealer.address)
 			).to.changeEtherBalance(playerB.address, "109800000000000000");
 		});
+
 		it("Should emit event LogWinnerFundsTransfered", async function () {
 			const { contract, dealer, playerB } = await loadFixture(
 				deployDealerSettledFixture
@@ -444,6 +446,37 @@ describe("WorldCupChampionBet", function () {
 			const { contract, dealer, startTime, endTime, year, finalTime } =
 				await loadFixture(deployDealerSettledFixture);
 		});
+
+		it("Should not transfer playerA any amount", async function () {
+			const { contract, dealer, playerA, playerC, playerE } = await loadFixture(
+				deployDealerSettledFixture
+			);
+
+			await expect(() =>
+				contract.triggerWithdrawal(dealer.address)
+			).to.changeEtherBalance(playerA.address, 0);
+		});
+
+		it("Should not transfer playerC any amount", async function () {
+			const { contract, dealer, playerC } = await loadFixture(
+				deployDealerSettledFixture
+			);
+
+			await expect(() =>
+				contract.triggerWithdrawal(dealer.address)
+			).to.changeEtherBalance(playerC.address, 0);
+		});
+
+		it("Should not transfer playerE any amount", async function () {
+			const { contract, dealer, playerE } = await loadFixture(
+				deployDealerSettledFixture
+			);
+
+			await expect(() =>
+				contract.triggerWithdrawal(dealer.address)
+			).to.changeEtherBalance(playerE.address, 0);
+		});
+
 		it("Should transfer right amount of commission with LogCommissionTransfered", async function () {
 			const { contract, dealer, startTime, endTime, year, finalTime } =
 				await loadFixture(deployDealerSettledFixture);
