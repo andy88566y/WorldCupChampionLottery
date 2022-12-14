@@ -196,7 +196,7 @@ contract WorldCupChampionBet is Ownable {
         onlyHuman
         isLotteryActive
         checkAwayOrHomeParam(_awayOrHome)
-        returns (uint256)
+        returns (uint256, uint256)
     {
         uint256 remainder = msg.value % (betPrice);
         require(remainder == 0, "msg.value has remainder");
@@ -211,18 +211,19 @@ contract WorldCupChampionBet is Ownable {
             withdrawed: false
         });
 
+        uint256 homeOrAwayTicketId;
         if (_awayOrHome == home) {
             homeTickets.push(ticket);
+            homeOrAwayTicketId = homeTickets.length - 1;
         } else {
             awayTickets.push(ticket);
+            homeOrAwayTicketId = awayTickets.length - 1;
         }
         allTickets.push(ticket);
 
         emit LogTicketMinted(msg.sender, numBets);
         uint256 ticketId = allTickets.length - 1;
-        console.log("inside mintTicket");
-        console.log(ticketId);
-        return ticketId;
+        return (ticketId, homeOrAwayTicketId);
     }
 
     /*
@@ -358,12 +359,41 @@ contract WorldCupChampionBet is Ownable {
             bool withdrawed // 提錢與否
         )
     {
-        console.log("inside getTicket");
-        console.log(_ticketId);
-        // console.log(allTickets.length);
-
         Ticket memory ticket = allTickets[_ticketId];
-        // console.log(ticket);
+        playerAddress = ticket.playerAddress;
+        betCount = ticket.betCount;
+        awayOrHome = ticket.awayOrHome;
+        withdrawed = ticket.withdrawed;
+    }
+
+    function getHomeTicket(uint256 _ticketId)
+        public
+        view
+        returns (
+            address playerAddress,
+            uint256 betCount, // scaled
+            uint256 awayOrHome,
+            bool withdrawed // 提錢與否
+        )
+    {
+        Ticket memory ticket = homeTickets[_ticketId];
+        playerAddress = ticket.playerAddress;
+        betCount = ticket.betCount;
+        awayOrHome = ticket.awayOrHome;
+        withdrawed = ticket.withdrawed;
+    }
+
+    function getAwayTicket(uint256 _ticketId)
+        public
+        view
+        returns (
+            address playerAddress,
+            uint256 betCount, // scaled
+            uint256 awayOrHome,
+            bool withdrawed // 提錢與否
+        )
+    {
+        Ticket memory ticket = awayTickets[_ticketId];
         playerAddress = ticket.playerAddress;
         betCount = ticket.betCount;
         awayOrHome = ticket.awayOrHome;

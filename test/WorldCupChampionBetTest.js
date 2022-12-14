@@ -118,13 +118,26 @@ describe("WorldCupChampionBet", function () {
 						await ethers.provider.getBalance(playerA.address)
 					).to.greaterThan(0);
 
+					[ticketId, homeOrAwayTicketId] = await contract
+						.connect(playerA)
+						.callStatic.mintLotteryTicket(home, {
+							value: ethers.utils.parseEther("0.01"),
+						});
+					// 用 callStatic 來模擬 return value
 					await contract.connect(playerA).mintLotteryTicket(home, {
 						value: ethers.utils.parseEther("0.01"),
-					});
-					ticketId = 0; // 假設的，因為上面一行在 hardhat 中不會 return uint256 會是 transaction
+					}); // 這邊的 return 會是 transaction
 
 					[playerAddress, betCount, awayOrHome, withdrawed] =
 						await contract.getTicket(ticketId);
+
+					expect(playerAddress).to.eq(playerA.address);
+					expect(betCount).to.eq(10);
+					expect(awayOrHome).to.eq(home);
+					expect(withdrawed).to.eq(false);
+
+					[playerAddress, betCount, awayOrHome, withdrawed] =
+						await contract.getHomeTicket(homeOrAwayTicketId);
 
 					expect(playerAddress).to.eq(playerA.address);
 					expect(betCount).to.eq(10);

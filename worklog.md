@@ -60,3 +60,4 @@ ticketId = contract.connect(playerA).mintLotteryTicket(home, { value: ethers.uti
 ```
 
 ticketId will be a transaction, not an uint256
+用 callStatic 來模擬 return value
