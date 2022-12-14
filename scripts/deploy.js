@@ -4,28 +4,32 @@
 // You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
+const { ethers } = require("hardhat");
 const hre = require("hardhat");
 
+const year = 2022;
+const startTime = ethers.BigNumber.from("1670947200");
+const endTime = ethers.BigNumber.from("1671006600");
+const finalTime = ethers.BigNumber.from("1671006660");
+
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+	const [dealer] = await ethers.getSigners();
+	const Bet = await hre.ethers.getContractFactory("WorldCupChampionBet");
+	const bet = await Bet.deploy();
 
-  const lockedAmount = hre.ethers.utils.parseEther("1");
+	await bet.connect(dealer).deployed();
 
-  const Lock = await hre.ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+	console.log(`WorldCupChampionBet deployed. address: ${bet.address}`);
 
-  await lock.deployed();
-
-  console.log(
-    `Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
-  );
+	await bet.connect(dealer).initLottery(year, startTime, endTime, finalTime);
+	console.log(
+		`Triggered: WorldCupChampionBet.initLottery(${year}, ${startTime}, ${endTime}, ${finalTime})`
+	);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
 main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
+	console.error(error);
+	process.exitCode = 1;
 });

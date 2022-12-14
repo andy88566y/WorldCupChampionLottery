@@ -1,9 +1,8 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
-// const GOERLI_ACCOUNT_PRIVATE_KEY = process.env.GOERLI_ACCOUNT_PRIVATE_KEY;
-// const INFURA_API_KEY = process.env.INFURA_API_KEY;
+const GOERLI_PRIVATE_KEY = process.env.GOERLI_PRIVATE_KEY;
+const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY;
-// const URL = process.env.URL;
 
 module.exports = {
 	solidity: {
@@ -25,6 +24,10 @@ module.exports = {
 	networks: {
 		hardhat: {
 			allowUnlimitedContractSize: true,
+		},
+		goerli: {
+			url: `https://eth-goerli.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
+			accounts: [GOERLI_PRIVATE_KEY],
 		},
 	},
 };

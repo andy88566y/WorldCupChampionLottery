@@ -73,3 +73,36 @@ ticketId = contract.connect(playerA).mintLotteryTicket(home, { value: ethers.uti
 
 ticketId will be a transaction, not an uint256
 用 callStatic 來模擬 return value
+
+#### 測試網測試流程
+
+部署合約
+使用以下參數
+startTime: (1670947200) 12/14 00:00:00 GMT
+endTime: (1671006600) 12/14 09:30:00 GMT (16:30 GMT+8)
+finalTime: (1671006660) 12/14 09:31:00 GMT (16:31 GMT+8)
+
+deployer/dealer/owner: 0x8FBF8c717fD49714d864F81D26A2348E85a833dd
+player A: 0x0b1e8EF6B01BC7Ed9abdf8b9Bd0612D49Fa1D656
+player B: 0x0F534257AF0A5a331DF1441297c176060CF09236
+
+contract addr: 0x2d6A1409915F2D4d5cb00A61693a2dEd0bb4357D
+
+deploy and verify，在 etherscan 上和合約互動
+deploy 完就應該要可以下注，下注兩筆，分別為
+A away(1) 0.001
+https://goerli.etherscan.io/tx/0xf9207fd657ee2b8f9e73fd5bf21dc09de3525651e91945d4d24fa60b1c78e170
+
+B home(0) 0.001
+https://goerli.etherscan.io/tx/0xa140268fe504eabfac7a86a199ffe55aa2c60dc43d575a7057782d64698a8ad8
+
+以上在 allTickets homeTicket awayTicket 都有成功設立
+去運動，等待四點半後，莊家呼叫
+
+1. settleLottery(0)
+2. triggerWithdrawal(0x8FBF8c717fD49714d864F81D26A2348E85a833dd)
+   來觸發分錢，應該要是壓 home 的人拿到錢，莊家會拿到抽成
+
+#### 意外收穫
+
+原來同樣的合約部署兩次，已經 verify 過的他也認得？真猛
