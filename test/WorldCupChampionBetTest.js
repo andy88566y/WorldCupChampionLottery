@@ -4,6 +4,8 @@ const {
 } = require("@nomicfoundation/hardhat-network-helpers");
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+const home = 0;
+const away = 1;
 
 describe("WorldCupChampionBet", function () {
 	async function deployFixture() {
@@ -11,8 +13,8 @@ describe("WorldCupChampionBet", function () {
 			await ethers.getSigners();
 		const year = 2022;
 
-		const startTime = ethers.BigNumber.from("1670886000"); // 2022/12/13 00:00:00 UTC
-		const endTime = ethers.BigNumber.from("1670940000"); // 2022/12/18 15:00:00 UTC WorkdCup 冠軍賽開踢前
+		const startTime = ethers.BigNumber.from("1669852800"); // 2022/12/1 00:00:00 UTC
+		const endTime = ethers.BigNumber.from("1671375600"); // 2022/12/18 15:00:00 UTC WorkdCup 冠軍賽開踢前
 
 		const Contract = await ethers.getContractFactory("WorldCupChampionBet");
 		const contract = await Contract.deploy();
@@ -33,7 +35,7 @@ describe("WorldCupChampionBet", function () {
 	}
 
 	describe("Deployment", function () {
-		it.only("Should set the right public variable ChampionLottery", async function () {
+		it("Should set the right public variable ChampionLottery", async function () {
 			const { contract, startTime, endTime, year } = await loadFixture(
 				deployFixture
 			);
@@ -59,14 +61,14 @@ describe("WorldCupChampionBet", function () {
 			expect(_isCompleted).to.equal(false);
 		});
 
-		it.only("Should set the right dealer", async function () {
+		it("Should set the right dealer", async function () {
 			const { dealer, contract } = await loadFixture(deployFixture);
 
 			expect(await contract.owner()).to.equal(dealer.address);
 			expect(await contract.dealer()).to.equal(dealer.address);
 		});
 
-		it.only("Should fail unless startTime < endTime", async function () {
+		it("Should fail unless startTime < endTime", async function () {
 			// We don't use the fixture here because we want a different deployment
 			const [dealer] = await ethers.getSigners();
 			const Contract = await ethers.getContractFactory("WorldCupChampionBet");
@@ -79,12 +81,42 @@ describe("WorldCupChampionBet", function () {
 		});
 	});
 
-	describe("Play Mint Ticket", function () {
+	describe("Player Mint Ticket", function () {
 		describe("Successfully Mint", function () {
-			it("Should revert with the right error unless called by human", async function () {});
+			it("Should revert with the right error unless called by human", async function () {
+				const { contract, playerA } = await loadFixture(deployFixture);
+				const Foo = await ethers.getContractFactory("Foo");
+				const otherContract = await Foo.deploy();
+
+				await expect(
+					otherContract.connect(playerA).mintLotteryTicket(contract.address)
+				).to.be.revertedWith(
+					"only humans allowed! (code present at caller address)"
+				);
+			});
+			it("Should revert with the right error if called with 0.0011 ether", async function () {});
 
 			describe("playerA bets home 10 bets", function () {
-				it("Should set good allTickets homeTickets LogTicketMinted", async function () {});
+				it("Should set good allTickets homeTickets LogTicketMinted", async function () {
+					const { contract, playerA } = await loadFixture(deployFixture);
+
+					expect(
+						await ethers.provider.getBalance(playerA.address)
+					).to.greaterThan(0);
+
+					await contract.connect(playerA).mintLotteryTicket(home, {
+						value: ethers.utils.parseEther("0.01"),
+					});
+					ticketId = 0; // 假設的，因為上面一行在 hardhat 中不會 return uint256 會是 transaction
+
+					[playerAddress, betCount, awayOrHome, withdrawed] =
+						await contract.getTicket(ticketId);
+
+					expect(playerAddress).to.eq(playerA.address);
+					expect(betCount).to.eq(10);
+					expect(awayOrHome).to.eq(home);
+					expect(withdrawed).to.eq(false);
+				});
 			});
 			describe("playerB bets away 100 bets", function () {
 				it("Should set good allTickets homeTickets LogTicketMinted", async function () {});

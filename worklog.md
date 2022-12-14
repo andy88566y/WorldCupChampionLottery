@@ -51,3 +51,12 @@ Ticket 每名玩家每次 mint 一張 ticket，一張 ticket 可以包含多個 
 
 想寫成只收贏家的 1% 錢，贏越多抽越多。
 那就得要開獎的時候才能抽成了
+
+Hardhat Test returns transaction instead of return value
+in my case,
+
+```
+ticketId = contract.connect(playerA).mintLotteryTicket(home, { value: ethers.utils.parseEther("0.001") })
+```
+
+ticketId will be a transaction, not an uint256

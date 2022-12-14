@@ -106,6 +106,10 @@ contract WorldCupChampionBet is Ownable {
             block.timestamp > ChampionLottery.endTime ||
             block.timestamp < ChampionLottery.startTime
         ) {
+            console.log(ChampionLottery.startTime);
+            console.log(block.timestamp);
+            console.log(ChampionLottery.endTime);
+
             revert Lottery__MintingPeriodClosed();
         }
         _;
@@ -192,7 +196,7 @@ contract WorldCupChampionBet is Ownable {
         onlyHuman
         isLotteryActive
         checkAwayOrHomeParam(_awayOrHome)
-        returns (uint256 ticketId)
+        returns (uint256)
     {
         uint256 remainder = msg.value % (betPrice);
         require(remainder == 0, "msg.value has remainder");
@@ -215,7 +219,10 @@ contract WorldCupChampionBet is Ownable {
         allTickets.push(ticket);
 
         emit LogTicketMinted(msg.sender, numBets);
-        ticketId = allTickets.length;
+        uint256 ticketId = allTickets.length - 1;
+        console.log("inside mintTicket");
+        console.log(ticketId);
+        return ticketId;
     }
 
     /*
@@ -289,7 +296,7 @@ contract WorldCupChampionBet is Ownable {
         for (uint256 i = 0; i <= length; i++) {
             Ticket storage ticket = tickets[i];
             uint256 withdrawnAmount = ticket.betCount * pricePerWinningBet;
-            ticket.withdrawed = false;
+            ticket.withdrawed = true;
             payable(ticket.playerAddress).transfer(withdrawnAmount);
             emit LogWinnerFundsTransfered(
                 ticket.playerAddress,
@@ -351,10 +358,16 @@ contract WorldCupChampionBet is Ownable {
             bool withdrawed // 提錢與否
         )
     {
-        playerAddress = allTickets[_ticketId].playerAddress;
-        betCount = allTickets[_ticketId].betCount;
-        awayOrHome = allTickets[_ticketId].awayOrHome;
-        withdrawed = allTickets[_ticketId].withdrawed;
+        console.log("inside getTicket");
+        console.log(_ticketId);
+        // console.log(allTickets.length);
+
+        Ticket memory ticket = allTickets[_ticketId];
+        // console.log(ticket);
+        playerAddress = ticket.playerAddress;
+        betCount = ticket.betCount;
+        awayOrHome = ticket.awayOrHome;
+        withdrawed = ticket.withdrawed;
     }
 
     /*
