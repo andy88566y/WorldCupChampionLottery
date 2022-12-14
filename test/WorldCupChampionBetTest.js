@@ -114,19 +114,17 @@ describe("WorldCupChampionBet", function () {
 				it("Should set good allTickets homeTickets LogTicketMinted", async function () {
 					const { contract, playerA } = await loadFixture(deployFixture);
 
-					expect(
-						await ethers.provider.getBalance(playerA.address)
-					).to.greaterThan(0);
-
+					// 用 callStatic 來模擬 return value
 					[ticketId, homeOrAwayTicketId] = await contract
 						.connect(playerA)
 						.callStatic.mintLotteryTicket(home, {
 							value: ethers.utils.parseEther("0.01"),
 						});
-					// 用 callStatic 來模擬 return value
+
+					// 這邊的 return 會是 transaction
 					await contract.connect(playerA).mintLotteryTicket(home, {
 						value: ethers.utils.parseEther("0.01"),
-					}); // 這邊的 return 會是 transaction
+					});
 
 					[playerAddress, betCount, awayOrHome, withdrawed] =
 						await contract.getTicket(ticketId);
@@ -146,7 +144,36 @@ describe("WorldCupChampionBet", function () {
 				});
 			});
 			describe("playerB bets away 100 bets", function () {
-				it("Should set good allTickets homeTickets LogTicketMinted", async function () {});
+				it("Should set good allTickets homeTickets LogTicketMinted", async function () {
+					const { contract, playerB } = await loadFixture(deployFixture);
+
+					// 用 callStatic 來模擬 return value
+					[ticketId, homeOrAwayTicketId] = await contract
+						.connect(playerB)
+						.callStatic.mintLotteryTicket(away, {
+							value: ethers.utils.parseEther("0.1"),
+						});
+					// 這邊的 return 會是 transaction
+					await contract.connect(playerB).mintLotteryTicket(away, {
+						value: ethers.utils.parseEther("0.1"),
+					});
+
+					[playerAddress, betCount, awayOrHome, withdrawed] =
+						await contract.getTicket(ticketId);
+
+					expect(playerAddress).to.eq(playerB.address);
+					expect(betCount).to.eq(100);
+					expect(awayOrHome).to.eq(away);
+					expect(withdrawed).to.eq(false);
+
+					[playerAddress, betCount, awayOrHome, withdrawed] =
+						await contract.getAwayTicket(homeOrAwayTicketId);
+
+					expect(playerAddress).to.eq(playerB.address);
+					expect(betCount).to.eq(100);
+					expect(awayOrHome).to.eq(away);
+					expect(withdrawed).to.eq(false);
+				});
 			});
 			describe("playerC bets home 100 bets", function () {
 				it("Should set good allTickets homeTickets LogTicketMinted", async function () {});
