@@ -28,11 +28,23 @@
 6. E home 1000 bets
 7. commission rate 1%
 8. total 1220 bets, total 1.22 ether
-9. commission = 12.2 bets (scaled: 1.22E19)
-10. winner = away, winningBets = 1100 bets, loseBets = 11100 bets
-11. bettingOdds = (11100 \* 10^18 - 1.22E19) / 1100 = 1.0079818e19
+9. commission = 12.2 bets = 0.0122 ether (scaled: 1.22E16)
+10. winner = away, winningBets = 110 bets, loseBets = 1110 bets
+11.
 
-B gets 10 \* 1.0079818e19 / 10^18 = 100.79818 bets
+```
+
+potSizeAfterCommission = totalBetsCount * betPrice - commission
+                       = 1220 * (0.001 * 10^18) - (0.0122 * 10^18)
+                       = 1.2078e+18
+
+pricePerWinningBet = potSizeAfterCommission / winningBetsCount
+                   = 1.2078e18 / 110
+                   = 1.098e16
+                   -> 1 bet 0.01098 ether
+                      原本 1 bet 0.001 ether 可賺回 0.01098
+                      賠率 10.98
+```
 
 ## 莊家處理意外狀況
 

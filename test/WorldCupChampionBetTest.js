@@ -67,10 +67,10 @@ describe("WorldCupChampionBet", function () {
 		[BTicketId, BHomeOrAwayTicketId] = await contract
 			.connect(playerB)
 			.callStatic.mintLotteryTicket(away, {
-				value: ethers.utils.parseEther("0.1"),
+				value: ethers.utils.parseEther("0.01"),
 			});
 		await contract.connect(playerB).mintLotteryTicket(away, {
-			value: ethers.utils.parseEther("0.1"),
+			value: ethers.utils.parseEther("0.01"),
 		});
 
 		[CTicketId, CHomeOrAwayTicketId] = await contract
@@ -85,10 +85,10 @@ describe("WorldCupChampionBet", function () {
 		[DTicketId, DHomeOrAwayTicketId] = await contract
 			.connect(playerD)
 			.callStatic.mintLotteryTicket(away, {
-				value: ethers.utils.parseEther("1"),
+				value: ethers.utils.parseEther("0.1"),
 			});
 		await contract.connect(playerD).mintLotteryTicket(away, {
-			value: ethers.utils.parseEther("1"),
+			value: ethers.utils.parseEther("0.1"),
 		});
 
 		[ETicketId, EHomeOrAwayTicketId] = await contract
@@ -226,7 +226,7 @@ describe("WorldCupChampionBet", function () {
 					expect(withdrawed).to.eq(false);
 				});
 			});
-			describe("playerB bets away 100 bets", function () {
+			describe("playerB bets away 10 bets", function () {
 				it("Should set good allTickets homeTickets LogTicketMinted", async function () {
 					const { contract, playerB, BTicketId, BHomeOrAwayTicketId } =
 						await loadFixture(deployPlayerMintTicketFixture);
@@ -235,7 +235,7 @@ describe("WorldCupChampionBet", function () {
 						await contract.getTicket(BTicketId);
 
 					expect(playerAddress).to.eq(playerB.address);
-					expect(betCount).to.eq(100);
+					expect(betCount).to.eq(10);
 					expect(awayOrHome).to.eq(away);
 					expect(withdrawed).to.eq(false);
 
@@ -243,7 +243,7 @@ describe("WorldCupChampionBet", function () {
 						await contract.getAwayTicket(BHomeOrAwayTicketId);
 
 					expect(playerAddress).to.eq(playerB.address);
-					expect(betCount).to.eq(100);
+					expect(betCount).to.eq(10);
 					expect(awayOrHome).to.eq(away);
 					expect(withdrawed).to.eq(false);
 				});
@@ -274,7 +274,7 @@ describe("WorldCupChampionBet", function () {
 					expect(withdrawed).to.eq(false);
 				});
 			});
-			describe("playerD bets away 1000 bets", function () {
+			describe("playerD bets away 100 bets", function () {
 				it("Should set good allTickets homeTickets LogTicketMinted", async function () {
 					it("Should set good allTickets homeTickets LogTicketMinted", async function () {
 						const { contract, playerD, DTicketId, DHomeOrAwayTicketId } =
@@ -284,7 +284,7 @@ describe("WorldCupChampionBet", function () {
 							await contract.getTicket(DTicketId);
 
 						expect(playerAddress).to.eq(playerD.address);
-						expect(betCount).to.eq(1000);
+						expect(betCount).to.eq(100);
 						expect(awayOrHome).to.eq(away);
 						expect(withdrawed).to.eq(false);
 
@@ -292,7 +292,7 @@ describe("WorldCupChampionBet", function () {
 							await contract.getAwayTicket(DHomeOrAwayTicketId);
 
 						expect(playerAddress).to.eq(playerD.address);
-						expect(betCount).to.eq(1000);
+						expect(betCount).to.eq(100);
 						expect(awayOrHome).to.eq(away);
 						expect(withdrawed).to.eq(false);
 					});
@@ -342,7 +342,7 @@ describe("WorldCupChampionBet", function () {
 			);
 
 			await time.increaseTo(finalTime);
-			await time.increase(1);
+			await time.increase(ethers.BigNumber.from("12200000000000000")); // 1.22E16
 
 			await expect(
 				contract.connect(dealer).settleLottery(3)
@@ -373,7 +373,12 @@ describe("WorldCupChampionBet", function () {
 			expect(_endTime).to.eq(endTime);
 			expect(_year).to.eq(year);
 			expect(_champion).to.eq(away);
-			expect(_commission).to.eq(1);
+			expect(_commission).to.eq(ethers.BigNumber.from("12200000000000000"));
+			expect(_pricePerWinningBet).to.eq(
+				ethers.BigNumber.from("10980000000000000")
+			);
+			expect(_isSettled).to.eq(true);
+			expect(_isCompleted).to.eq(false);
 		});
 	});
 
