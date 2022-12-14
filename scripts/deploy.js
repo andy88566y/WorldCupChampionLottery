@@ -8,9 +8,9 @@ const { ethers } = require("hardhat");
 const hre = require("hardhat");
 
 const year = 2022;
-const startTime = ethers.BigNumber.from("1670947200");
-const endTime = ethers.BigNumber.from("1671006600");
-const finalTime = ethers.BigNumber.from("1671006660");
+const startTime = ethers.BigNumber.from("1669852800");
+const endTime = ethers.BigNumber.from("1671375600");
+const finalTime = ethers.BigNumber.from("1671393600");
 
 async function main() {
 	const [dealer] = await ethers.getSigners();

@@ -29,5 +29,9 @@ module.exports = {
 			url: `https://eth-goerli.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
 			accounts: [GOERLI_PRIVATE_KEY],
 		},
+		mainnet: {
+			url: `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
+			accounts: [],
+		},
 	},
 };

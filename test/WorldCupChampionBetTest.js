@@ -16,7 +16,7 @@ describe("WorldCupChampionBet", function () {
 
 		const startTime = ethers.BigNumber.from("1669852800"); // 2022/12/1 00:00:00 UTC
 		const endTime = ethers.BigNumber.from("1671375600"); // 2022/12/18 15:00:00 UTC WorkdCup 冠軍賽開踢前
-		const finalTime = ethers.BigNumber.from("1671451200"); // 2022/12/19 12:00:00
+		const finalTime = ethers.BigNumber.from("1671393600"); // 2022/12/18 20:00:00
 
 		const Contract = await ethers.getContractFactory("WorldCupChampionBet");
 		const contract = await Contract.deploy();
