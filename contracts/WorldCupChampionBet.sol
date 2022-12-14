@@ -84,7 +84,7 @@ contract WorldCupChampionBet is Ownable {
     error Lottery__ActiveLotteryExists();
     error Lottery__MintingPeriodClosed();
     error Lottery__MintingNotEnded();
-    error Lottery__NotCompleted();
+    error Lottery__NotSettled();
     error Lottery__FinalNotEnded();
 
     // modifiers
@@ -130,9 +130,9 @@ contract WorldCupChampionBet is Ownable {
     /* @dev check that Lottery period is Ended
        so dealer can set champion
      */
-    modifier isLotteryCompleted() {
-        if (ChampionLottery.isCompleted != true) {
-            revert Lottery__NotCompleted();
+    modifier isLotterySettled() {
+        if (ChampionLottery.isSettled != true) {
+            revert Lottery__NotSettled();
         }
         _;
     }
@@ -316,7 +316,7 @@ contract WorldCupChampionBet is Ownable {
      */
     function triggerWithdrawal(address payable commissionDestAddr)
         external
-        isLotteryCompleted
+        isLotterySettled
         onlyOwner
     {
         ChampionLottery.isCompleted = true;

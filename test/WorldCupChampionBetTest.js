@@ -413,13 +413,22 @@ describe("WorldCupChampionBet", function () {
 	});
 
 	describe("Dealer trigger Withdrawal", function () {
-		it("Should revert with the right error if Lottery not Completed", async function () {
-			const { contract, dealer, startTime, endTime, year, finalTime } =
-				await loadFixture(deployDealerSettledFixture);
+		it("Should revert with the right error if Lottery not Settled", async function () {
+			const { contract, dealer } = await loadFixture(
+				deployPlayerMintTicketFixture
+			);
+			await expect(
+				contract.triggerWithdrawal(dealer.address)
+			).to.be.revertedWithCustomError(contract, "Lottery__NotSettled");
 		});
 		it("Should transfer playerB right amount with LogWinnerFundsTransfered", async function () {
-			const { contract, dealer, startTime, endTime, year, finalTime } =
-				await loadFixture(deployDealerSettledFixture);
+			const { contract, dealer, playerB } = await loadFixture(
+				deployDealerSettledFixture
+			);
+
+			await expect(() =>
+				contract.triggerWithdrawal(dealer.address)
+			).to.changeEtherBalance(playerB.address, "-200");
 		});
 		it("Should transfer playerD right amount with LogWinnerFundsTransfered", async function () {
 			const { contract, dealer, startTime, endTime, year, finalTime } =
