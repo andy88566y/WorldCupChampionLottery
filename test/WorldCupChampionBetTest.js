@@ -523,13 +523,4 @@ describe("WorldCupChampionBet", function () {
 				);
 		});
 	});
-
-	describe("if no one wins", function () {
-		it("dealer takes all", async function () {});
-	});
-
-	describe("if every one wins", function () {
-		it("dealer takes 1% commission", async function () {});
-		it("player takes 99% of original amount", async function () {});
-	});
 });
