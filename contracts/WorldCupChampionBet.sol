@@ -305,6 +305,10 @@ contract WorldCupChampionBet is Ownable {
         );
     }
 
+    function dealer() public view returns (address) {
+        return owner();
+    }
+
     /*
      * @title getLottery
      * @dev getter function for tickets bc its a struct

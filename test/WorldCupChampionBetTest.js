@@ -59,9 +59,10 @@ describe("WorldCupChampionBet", function () {
 			expect(_isCompleted).to.equal(false);
 		});
 
-		it("Should set the right dealer", async function () {
+		it.only("Should set the right dealer", async function () {
 			const { dealer, contract } = await loadFixture(deployFixture);
 
+			expect(await contract.owner()).to.equal(dealer.address);
 			expect(await contract.dealer()).to.equal(dealer.address);
 		});
 
