@@ -4,8 +4,8 @@ pragma solidity ^0.8.0;
 // load other contracts
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+
 // for debugging
-import "hardhat/console.sol";
 
 contract WorldCupChampionBet is Ownable {
     using Math for uint256;
@@ -108,10 +108,6 @@ contract WorldCupChampionBet is Ownable {
             block.timestamp > ChampionLottery.endTime ||
             block.timestamp < ChampionLottery.startTime
         ) {
-            console.log(ChampionLottery.startTime);
-            console.log(block.timestamp);
-            console.log(ChampionLottery.endTime);
-
             revert Lottery__MintingPeriodClosed();
         }
         _;
@@ -235,24 +231,15 @@ contract WorldCupChampionBet is Ownable {
         onlyOwner
         checkAwayOrHomeParam(_champion)
     {
-        console.log("1");
         // ChampionLotteryStruct storage lottery = ChampionLottery;
-        console.log("1");
         ChampionLottery.champion = _champion;
-        console.log("2");
         uint256 winningBetsCount = 0;
         uint256 loseBetsCount = 0;
         uint256 totalBetsCount = 0;
-        console.log("3");
-        console.log("4");
         uint256 totalTicketsCount = allTickets.length;
 
-        console.log(_champion);
-        console.log(totalTicketsCount);
         for (uint256 i = 0; i < totalTicketsCount; i++) {
             totalBetsCount += allTickets[i].betCount;
-            console.log("allTickets[i].awayOrHome");
-            console.log(allTickets[i].awayOrHome);
             if (allTickets[i].awayOrHome == _champion) {
                 winningBetsCount += allTickets[i].betCount;
             } else {
@@ -271,29 +258,12 @@ contract WorldCupChampionBet is Ownable {
         if (winningBetsCount == 0) {
             pricePerWinningBet = 0;
             commission = address(this).balance;
-            console.log("winningBetsCount == 0");
-            console.log("commission: ");
-            console.log(commission);
         } else {
             commission =
                 (totalBetsCount * commissionNumerator * betPrice) /
                 commissionDenominator;
             potSizeAfterCommission = totalBetsCount * betPrice - commission;
             pricePerWinningBet = potSizeAfterCommission / winningBetsCount;
-
-            console.log("winningBetsCount > 0");
-            console.log("totalBetsCount");
-            console.log(totalBetsCount);
-            console.log("betPrice");
-            console.log(betPrice);
-            console.log("commission: ");
-            console.log(commission);
-            console.log("potSizeAfterCommission");
-            console.log(potSizeAfterCommission);
-            console.log("winningBetsCount");
-            console.log(winningBetsCount);
-            console.log("pricePerWinningBet");
-            console.log(pricePerWinningBet);
         }
 
         ChampionLottery.commission = commission;
