@@ -66,12 +66,15 @@ describe("WorldCupChampionBet", function () {
 			expect(await contract.dealer()).to.equal(dealer.address);
 		});
 
-		it("Should fail unless startTime < endTime", async function () {
+		it.only("Should fail unless startTime < endTime", async function () {
 			// We don't use the fixture here because we want a different deployment
-			const latestTime = await time.latest();
+			const [dealer] = await ethers.getSigners();
 			const Contract = await ethers.getContractFactory("WorldCupChampionBet");
+			const contract = await Contract.deploy();
+			const startTimeBad = ethers.BigNumber.from("1670940000");
+			const endTimeBad = ethers.BigNumber.from("1670886000");
 			await expect(
-				Contract.deploy(latestTime, latestTime, 2022)
+				contract.connect(dealer).initLottery(2022, startTimeBad, endTimeBad)
 			).to.be.revertedWith("_startTime >= _endTime");
 		});
 	});
