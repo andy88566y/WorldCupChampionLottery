@@ -18,8 +18,9 @@ contract WorldCupChampionBet is Ownable {
 
     // State Variables
     struct ChampionLotteryStruct {
-        uint256 startTime;
-        uint256 endTime;
+        uint256 startTime; // mint start
+        uint256 endTime; // mint end
+        uint256 finalTime; // 抓一個比賽一定會結束的時間 dealer 才輸入 champion
         uint256 year; // 世足賽舉辦年
         // 莊家輸入的勝利的那邊. 0 代表主場, 1 代表客場.
         uint256 champion;
@@ -84,6 +85,7 @@ contract WorldCupChampionBet is Ownable {
     error Lottery__MintingPeriodClosed();
     error Lottery__MintingNotEnded();
     error Lottery__NotCompleted();
+    error Lottery__FinalNotEnded();
 
     // modifiers
     modifier onlyHuman() {
@@ -118,9 +120,9 @@ contract WorldCupChampionBet is Ownable {
     /* @dev check that betting period is Ended
        so dealer can set champion
      */
-    modifier isLotteryMintingEnded() {
-        if (block.timestamp < ChampionLottery.endTime) {
-            revert Lottery__MintingNotEnded();
+    modifier isFinalEnded() {
+        if (block.timestamp < ChampionLottery.finalTime) {
+            revert Lottery__FinalNotEnded();
         }
         _;
     }
@@ -143,21 +145,16 @@ contract WorldCupChampionBet is Ownable {
         _;
     }
 
-    modifier checkTime(uint256 _startTime, uint256 _endTime) {
-        require(_startTime < _endTime, "_startTime >= _endTime");
+    modifier checkTime(
+        uint256 _startTime,
+        uint256 _endTime,
+        uint256 _finalTime
+    ) {
+        require(_startTime < _endTime, "time params not good");
+        require(_startTime < _finalTime, "time params not good");
+        require(_endTime < _finalTime, "time params not good");
         _;
     }
-
-    // constructor
-    // constructor(
-    //     uint256 _year,
-    //     uint256 _startTime,
-    //     uint256 _endTime
-    // ) {
-    //     console.log("1");
-    //     _initLottery(_year, _startTime, _endTime);
-    //     console.log("2");
-    // }
 
     // functions
 
@@ -171,11 +168,13 @@ contract WorldCupChampionBet is Ownable {
     function initLottery(
         uint256 _year,
         uint256 _startTime,
-        uint256 _endTime
-    ) external onlyOwner checkTime(_startTime, _endTime) {
+        uint256 _endTime,
+        uint256 _finalTime
+    ) external onlyOwner checkTime(_startTime, _endTime, _finalTime) {
         ChampionLottery = ChampionLotteryStruct({
             startTime: _startTime,
             endTime: _endTime,
+            finalTime: _finalTime,
             year: _year,
             champion: 2,
             commission: 0,
@@ -232,7 +231,7 @@ contract WorldCupChampionBet is Ownable {
      */
     function settleLottery(uint256 _champion)
         external
-        isLotteryMintingEnded
+        isFinalEnded
         onlyOwner
         checkAwayOrHomeParam(_champion)
     {

@@ -15,15 +15,19 @@ describe("WorldCupChampionBet", function () {
 
 		const startTime = ethers.BigNumber.from("1669852800"); // 2022/12/1 00:00:00 UTC
 		const endTime = ethers.BigNumber.from("1671375600"); // 2022/12/18 15:00:00 UTC WorkdCup 冠軍賽開踢前
+		const finalTime = ethers.BigNumber.from("1671451200"); // 2022/12/19 12:00:00
 
 		const Contract = await ethers.getContractFactory("WorldCupChampionBet");
 		const contract = await Contract.deploy();
-		await contract.connect(dealer).initLottery(year, startTime, endTime);
+		await contract
+			.connect(dealer)
+			.initLottery(year, startTime, endTime, finalTime);
 
 		return {
 			contract,
 			startTime,
 			endTime,
+			finalTime,
 			year,
 			dealer,
 			playerA,
@@ -75,9 +79,12 @@ describe("WorldCupChampionBet", function () {
 			const contract = await Contract.deploy();
 			const startTimeBad = ethers.BigNumber.from("1670940000");
 			const endTimeBad = ethers.BigNumber.from("1670886000");
+			const finalTimeBad = ethers.BigNumber.from("1670886001");
 			await expect(
-				contract.connect(dealer).initLottery(2022, startTimeBad, endTimeBad)
-			).to.be.revertedWith("_startTime >= _endTime");
+				contract
+					.connect(dealer)
+					.initLottery(2022, startTimeBad, endTimeBad, finalTimeBad)
+			).to.be.revertedWith("time params not good");
 		});
 	});
 
@@ -273,13 +280,30 @@ describe("WorldCupChampionBet", function () {
 					expect(withdrawed).to.eq(false);
 				});
 			});
-			describe("getTicket()", function () {});
 		});
 	});
 
 	describe("Dealer settle down Lottery with param _champion = away", function () {
-		it("Should revert with the right error if Lottery not ended", async function () {});
-		it("Should revert with the right error if param _champion not good", async function () {});
+		it("Should revert with the right error if Lottery not ended", async function () {
+			const { contract, dealer } = await loadFixture(deployFixture);
+
+			await expect(
+				contract.connect(dealer).settleLottery(home)
+			).to.be.revertedWithCustomError(contract, "Lottery__FinalNotEnded");
+			await expect(
+				contract.connect(dealer).settleLottery(away)
+			).to.be.revertedWithCustomError(contract, "Lottery__FinalNotEnded");
+		});
+		it("Should revert with the right error if param _champion not good", async function () {
+			const { contract, dealer, finalTime } = await loadFixture(deployFixture);
+
+			await time.increaseTo(finalTime);
+			await time.increase(1);
+
+			await expect(
+				contract.connect(dealer).settleLottery(3)
+			).to.be.revertedWith("_awayOrHome param no good.");
+		});
 		it("Should set good commission pricePerWinningBet isSettled with Event LogSettleLottery", async function () {});
 	});
 
