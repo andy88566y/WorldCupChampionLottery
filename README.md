@@ -2,8 +2,8 @@
 
 這是一份可以下注世足冠軍是哪一隊的遊戲，能夠下注冠軍是主場球隊 or 客場球隊。
 
-合約地址: https://goerli.etherscan.io/address/0xc4b7094c59496641d65d3a47ab4500295e6bb3e5
-透過 etherscan write Contract 下注
+[合約地址](https://goerli.etherscan.io/address/0xc4b7094c59496641d65d3a47ab4500295e6bb3e5)
+透過 etherscan Write Contract 下注
 
 這份 project 希望做到：
 
