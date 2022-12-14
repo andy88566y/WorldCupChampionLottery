@@ -124,6 +124,39 @@ describe("WorldCupChampionBet", function () {
 			EHomeOrAwayTicketId,
 		};
 	}
+	async function deployDealerSettledFixture() {
+		const {
+			contract,
+			startTime,
+			endTime,
+			finalTime,
+			year,
+			dealer,
+			playerA,
+			playerB,
+			playerC,
+			playerD,
+			playerE,
+		} = await loadFixture(deployPlayerMintTicketFixture);
+
+		await time.increaseTo(finalTime);
+		await time.increase(1);
+		await contract.connect(dealer).settleLottery(away);
+
+		return {
+			contract,
+			startTime,
+			endTime,
+			finalTime,
+			year,
+			dealer,
+			playerA,
+			playerB,
+			playerC,
+			playerD,
+			playerE,
+		};
+	}
 
 	describe("Deployment", function () {
 		it("Should set the right public variable ChampionLottery", async function () {
@@ -351,13 +384,10 @@ describe("WorldCupChampionBet", function () {
 		it("Should set good commission, pricePerWinningBet, isSettled with Event LogSettleLottery", async function () {
 			const { contract, dealer, startTime, endTime, year, finalTime } =
 				await loadFixture(deployPlayerMintTicketFixture);
-			console.log("123");
 			await time.increaseTo(finalTime);
 			await time.increase(1);
-			console.log("456");
 			await contract.connect(dealer).settleLottery(away);
 
-			console.log("789");
 			const [
 				_startTime,
 				_endTime,
@@ -383,10 +413,22 @@ describe("WorldCupChampionBet", function () {
 	});
 
 	describe("Dealer trigger Withdrawal", function () {
-		it("Should revert with the right error if Lottery not Completed", async function () {});
-		it("Should transfer playerB right amount with LogWinnerFundsTransfered", async function () {});
-		it("Should transfer playerD right amount with LogWinnerFundsTransfered", async function () {});
-		it("Should transfer right amount of commission with LogCommissionTransfered", async function () {});
+		it("Should revert with the right error if Lottery not Completed", async function () {
+			const { contract, dealer, startTime, endTime, year, finalTime } =
+				await loadFixture(deployDealerSettledFixture);
+		});
+		it("Should transfer playerB right amount with LogWinnerFundsTransfered", async function () {
+			const { contract, dealer, startTime, endTime, year, finalTime } =
+				await loadFixture(deployDealerSettledFixture);
+		});
+		it("Should transfer playerD right amount with LogWinnerFundsTransfered", async function () {
+			const { contract, dealer, startTime, endTime, year, finalTime } =
+				await loadFixture(deployDealerSettledFixture);
+		});
+		it("Should transfer right amount of commission with LogCommissionTransfered", async function () {
+			const { contract, dealer, startTime, endTime, year, finalTime } =
+				await loadFixture(deployDealerSettledFixture);
+		});
 	});
 
 	describe("if no one wins", function () {
